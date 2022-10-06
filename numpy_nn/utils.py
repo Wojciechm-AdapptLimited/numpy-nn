@@ -49,7 +49,7 @@ def one_hot(x: np.ndarray) -> np.ndarray:
     Returns:
         np.ndarray: One-hot formatted array
     """
-    one_hot_x = np.zeros((x.size, x.max() + 1))
+    one_hot_x = np.zeros((x.size, np.max(x) + 1))
     one_hot_x[np.arange(x.size), x] = 1
     return one_hot_x
 
@@ -68,4 +68,4 @@ def accuracy(y_true: np.ndarray, y_pred: np.ndarray) -> float:
     class_pred = np.argmax(y_pred, axis=0)
     class_true = np.argmax(y_true, axis=0)
     scores = np.asarray(class_pred == class_true)
-    return np.mean(scores)
+    return float(np.mean(scores))
