@@ -66,7 +66,7 @@ class Sequential(Model):
         if 'accuracy' in self.metrics:
             self.metrics['accuracy'].append(sum(accuracies) / len(accuracies))
 
-    def validate(self, data: Dataset):
+    def validate(self, data: Dataset) -> None:
         losses = []
         accuracies = []
         for x, y in data.load():
