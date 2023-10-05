@@ -20,6 +20,7 @@ class Dataset:
         target_name (str): Identifier of the labels array
         cat_attr_names (list[str]): List of identifiers of the categorical features
         num_attr_names (list[str]): List of identifiers of the numerical features
+        is_class (bool): Does the target column represent classes or values
 
     """
 
@@ -27,17 +28,22 @@ class Dataset:
     target: np.ndarray
     dataset: np.ndarray
 
-    def __init__(self, df: pd.DataFrame, target_name: str,
-                 cat_attr_names: list[str], num_attr_names: list[str]) -> None:
+    def __init__(self, df: pd.DataFrame, target_name: str, cat_attr_names: list[str],
+                 num_attr_names: list[str], is_class: bool) -> None:
 
-        self.target = df[target_name].to_numpy()
-        if np.max(self.target) > 1:
-            self.target = one_hot(self.target)
+        if is_class:
+            classes = np.sort(df[target_name].unique())
+            self.target = df[target_name].replace(classes, np.arange(classes.size)).to_numpy()
+            if np.max(self.target) > 1:
+                self.target = one_hot(self.target)
+        else:
+            self.target = df[target_name].to_numpy()
 
         self.dataset = standardize(normalize(df[num_attr_names].to_numpy()))
 
         for name in cat_attr_names:
-            cat = df[name].to_numpy()
+            classes = np.sort(df[target_name].unique())
+            cat = df[name].replace(classes, np.arange(classes.size)).to_numpy()
             if np.max(cat) > 1:
                 cat = one_hot(df[name].to_numpy())
             self.dataset = np.concatenate((self.dataset, cat), axis=1)
